@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Grab Percentage app</title>
+		<style>
+			body {
+				padding: 50px;
+			}
+			#bar-container {
+				margin-top: 10px;
+			}
+			.bar {
+				background-color: cornsilk;
+				border: 1px solid red;
+				display: inline-block;
+				height: 30px;
+				width: 100%;
+			}
+		</style>
+	</head>
+	<body>	
+		<input id="bar-widths-input"/>
+		<div id="bar-container">
+			<div class="bar"></div>
+		</div>
+		<script>
+			window.onload = function() {
+				document.getElementById('bar-widths-input').addEventListener('keyup', function() {
+					var pattern = new RegExp('^[+]?([0-9]*[.])?[0-9]+$');//for +ve floating numbers
+					var arr = this.value.split(',');
+					var total = 0;
+					var isValidInput;
+					var docFrag = document.createDocumentFragment();
+					var barContainer = document.getElementById('bar-container');
+
+					while (barContainer.firstChild) {
+						barContainer.removeChild(barContainer.firstChild);
+					}
+					isValidInput = arr.every(function(value) {
+						return value.match(pattern);
+					});
+					if(!isValidInput || arr.length > 50) {
+						return false;
+					}
+					
+					total = arr.reduce(function(total, num) {
+						return parseFloat(total) + parseFloat(num);
+					});
+					arr.forEach(function(value) {
+						var child = document.createElement('div');
+						var percentage = Math.round((value/total)*100*100)/100;
+						//removing 10% to adjust for in-between border size
+						percentage -= Math.round(percentage*0.1*100)/100;
+
+						child.className = 'bar';
+						child.style.width = percentage+'%';
+						docFrag.appendChild(child);
+					});
+					barContainer.appendChild(docFrag);
+				});
+			}
+		</script>
+	</body>
+</html>
